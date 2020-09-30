@@ -10,6 +10,10 @@
 #define _PER_PIXEL_NORMALS
 #endif
 
+#if defined (SHADOWS_DEPTH) && !defined (SPOT)
+#define SHADOW_COORDS(idx1) unityShadowCoord2 _ShadowCoord : TEXCOORD##idx1;
+#endif
+
 ////////////////////////////////////////
 // Vertex structs
 //
