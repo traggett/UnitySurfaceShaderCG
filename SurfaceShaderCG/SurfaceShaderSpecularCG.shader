@@ -88,7 +88,7 @@
             // Uncomment the following line to enable dithering LOD crossfade. Note: there are more in the file to uncomment for other passes.
             //#pragma multi_compile _ LOD_FADE_CROSSFADE
 
-            #pragma vertex vertBase
+            #pragma vertex vert
             #pragma fragment fragBase
             #include "CGIncludes/SurfaceShaderShared.cginc"
 
@@ -123,7 +123,7 @@
             // Uncomment the following line to enable dithering LOD crossfade. Note: there are more in the file to uncomment for other passes.
             //#pragma multi_compile _ LOD_FADE_CROSSFADE
 
-            #pragma vertex vertAdd
+            #pragma vertex vert
             #pragma fragment fragAdd
             #include "CGIncludes/SurfaceShaderShared.cginc"
 
