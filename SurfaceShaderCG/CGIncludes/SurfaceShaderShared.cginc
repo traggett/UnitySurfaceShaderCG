@@ -246,7 +246,7 @@ VertexOutput vert(VertexInputSurface v)
 	output.worldRefl = reflect(output.viewDir, output.normalWorld);
 #endif
 #if defined(_REQUIRES_SCREEN_POS)
-	output.screenPos = ComputeScreenPos (output.pos);
+	output.screenPos = ComputeScreenPos(output.pos);
 #endif
 	
 	calcAmbientOrLightmapUV(v, output, output.normalWorld);
