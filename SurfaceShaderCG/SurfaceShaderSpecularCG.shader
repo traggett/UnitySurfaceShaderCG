@@ -51,69 +51,87 @@
 	
     SubShader
     {
-		Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
+		Tags 
+		{
+			"RenderType"="Opaque" 
+		}
         LOD 300
 	
+        // ------------------------------------------------------------------
+        //  Base forward pass (directional light, emission, lightmaps, ...)
         Pass
-		{
-			Name "FORWARD" 
-			Tags { "LightMode" = "ForwardBase" }
-			
-			Blend [_SrcBlend] [_DstBlend]
+        {
+            Name "FORWARD"
+            Tags { "LightMode" = "ForwardBase" }
+
+            Blend [_SrcBlend] [_DstBlend]
             ZWrite [_ZWrite]
-			Cull [_Cull]
-			
-			CGPROGRAM
-				#pragma target 3.0
-				
-				#pragma shader_feature _NORMALMAP
-				#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-				#pragma shader_feature _EMISSION
-				#pragma shader_feature _METALLICGLOSSMAP
-				#pragma shader_feature ___ _DETAIL_MULX2
-				#pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-				#pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-				#pragma shader_feature _ _GLOSSYREFLECTIONS_OFF
-				#pragma shader_feature _PARALLAXMAP
-				#pragma multi_compile_fog
-				#pragma multi_compile_fwdbase
-				#pragma multi_compile_instancing
-				
-				#pragma vertex vert
-				#pragma fragment fragBase
-				
-				#include "CGIncludes/SurfaceShaderShared.cginc"	
-			ENDCG
-		}
-		Pass
-		{     
-			Name "FORWARD_DELTA"
-			Tags { "LightMode" = "ForwardAdd" }
-			Blend [_SrcBlend] One
-			ZWrite Off
+
+            CGPROGRAM
+            #pragma target 3.0
+
+            // -------------------------------------
+
+            #pragma shader_feature_local _NORMALMAP
+            #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+            #pragma shader_feature _EMISSION
+            #pragma shader_feature_local _SPECGLOSSMAP
+            #pragma shader_feature_local _DETAIL_MULX2
+            #pragma shader_feature_local _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local _SPECULARHIGHLIGHTS_OFF
+            #pragma shader_feature_local _GLOSSYREFLECTIONS_OFF
+            #pragma shader_feature_local _PARALLAXMAP
+
+            #pragma multi_compile_fwdbase
+            #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            // Uncomment the following line to enable dithering LOD crossfade. Note: there are more in the file to uncomment for other passes.
+            //#pragma multi_compile _ LOD_FADE_CROSSFADE
+
+            #pragma vertex vertBase
+            #pragma fragment fragBase
+            #include "CGIncludes/SurfaceShaderShared.cginc"
+
+            ENDCG
+        }
+        // ------------------------------------------------------------------
+        //  Additive forward pass (one light per pass)
+        Pass
+        {
+            Name "FORWARD_DELTA"
+            Tags { "LightMode" = "ForwardAdd" }
+            Blend [_SrcBlend] One
+            Fog { Color (0,0,0,0) } // in additive pass fog should be black
+            ZWrite Off
             ZTest LEqual
-			Cull [_Cull]
-			
-			CGPROGRAM
-				#pragma target 3.0
-				
-				#pragma shader_feature _NORMALMAP
-				#pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-				#pragma shader_feature _METALLICGLOSSMAP
-				#pragma shader_feature _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-				#pragma shader_feature _ _SPECULARHIGHLIGHTS_OFF
-				#pragma shader_feature ___ _DETAIL_MULX2
-				#pragma shader_feature _PARALLAXMAP
-				#pragma multi_compile_fog
-				#pragma multi_compile_fwdadd_fullshadows
-				
-				#pragma vertex vert
-				#pragma fragment fragAdd
-				
-				#include "CGIncludes/SurfaceShaderShared.cginc"
-			ENDCG
-		}
-		Pass 
+
+            CGPROGRAM
+            #pragma target 3.0
+
+            // -------------------------------------
+
+            #pragma shader_feature_local _NORMALMAP
+            #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+            #pragma shader_feature_local _SPECGLOSSMAP
+            #pragma shader_feature_local _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local _SPECULARHIGHLIGHTS_OFF
+            #pragma shader_feature_local _DETAIL_MULX2
+            #pragma shader_feature_local _PARALLAXMAP
+
+            #pragma multi_compile_fwdadd_fullshadows
+            #pragma multi_compile_fog
+            // Uncomment the following line to enable dithering LOD crossfade. Note: there are more in the file to uncomment for other passes.
+            //#pragma multi_compile _ LOD_FADE_CROSSFADE
+
+            #pragma vertex vertAdd
+            #pragma fragment fragAdd
+            #include "CGIncludes/SurfaceShaderShared.cginc"
+
+            ENDCG
+        }
+        // ------------------------------------------------------------------
+        //  Shadow rendering pass
+        Pass 
 		{
             Name "ShadowCaster"
             Tags { "LightMode" = "ShadowCaster" }
@@ -122,21 +140,22 @@
 
             CGPROGRAM
             #pragma target 3.0
-			
-            #pragma shader_feature _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature _METALLICGLOSSMAP
-            #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature _PARALLAXMAP
+
+            // -------------------------------------
+
+
+            #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
+            #pragma shader_feature_local _SPECGLOSSMAP
+            #pragma shader_feature_local _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local _PARALLAXMAP
             #pragma multi_compile_shadowcaster
             #pragma multi_compile_instancing
             // Uncomment the following line to enable dithering LOD crossfade. Note: there are more in the file to uncomment for other passes.
             //#pragma multi_compile _ LOD_FADE_CROSSFADE
-			
+
             #pragma vertex vertShadowCaster
             #pragma fragment fragShadowCaster
 
-			#define UNITY_SETUP_BRDF_INPUT MetallicSetup
-			
             #include "UnityStandardShadow.cginc"
 
             ENDCG
