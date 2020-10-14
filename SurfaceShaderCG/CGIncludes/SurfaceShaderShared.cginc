@@ -285,7 +285,7 @@ fixed4 fragBase(VertexOutput i) : SV_Target
 	
 	UPDATE_SURFACE_FINAL_COLOR(i, s, c);
 	
-	UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
+	UNITY_EXTRACT_FOG(i);
     UNITY_APPLY_FOG(_unity_fogCoord, c.rgb);
 	
 	return OutputForward(c, c.a);
@@ -313,7 +313,7 @@ fixed4 fragAdd(VertexOutput i) : SV_Target
 	
 	UPDATE_SURFACE_FINAL_COLOR(i, s, c);
 	
-	UNITY_EXTRACT_FOG_FROM_EYE_VEC(i);
+	UNITY_EXTRACT_FOG(i);
     UNITY_APPLY_FOG_COLOR(_unity_fogCoord, c.rgb, half4(0,0,0,0)); // fog towards black in additive pass
 	
 	return OutputForward(c, c.a);
