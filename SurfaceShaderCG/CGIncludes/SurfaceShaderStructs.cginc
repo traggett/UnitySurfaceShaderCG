@@ -50,7 +50,7 @@ struct VertexOutput
 	float4 screenPos : TEXCOORD10;
 #endif
 #if defined(_REQUIRES_WORLD_REFL)
-  float3 worldRefl 	: TEXCOORD10;
+  float3 worldRefl 	: TEXCOORD11;
 #endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
